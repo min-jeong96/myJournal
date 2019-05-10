@@ -16,7 +16,7 @@ public class dailyDBHelper extends SQLiteOpenHelper {
     public void onCreate(SQLiteDatabase db) {
         db.execSQL("CREATE TABLE daily( _id INTEGER PRIMARY KEY AUTOINCREMENT, date String," +
                 "sleepHour INTEGER, sleepMinute INTEGER, wakeHour INTEGER, wakeMinute INTEGER," +
-                "sleepingTime INTEGER);");
+                "sleepingTime INTEGER, mood INTEGER);");
     }
 
     @Override
