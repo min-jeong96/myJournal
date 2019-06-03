@@ -1,5 +1,6 @@
 package com.example.myjournal;
 
+import android.app.Activity;
 import android.app.DatePickerDialog;
 import android.app.TimePickerDialog;
 import android.content.ContentValues;
@@ -10,10 +11,12 @@ import android.database.sqlite.SQLiteException;
 import android.graphics.drawable.ColorDrawable;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.DatePicker;
@@ -32,6 +35,7 @@ public class MainActivity extends AppCompatActivity {
     SQLiteDatabase dailyDB;
 
     boolean isAlreadyMade = false;
+    boolean isSelectedDate = false;
     int userYear, userMonth, userDay;
 
     String todayDate;
@@ -50,18 +54,21 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
         dailyHelper = new dailyDBHelper(this);
-        dailyDB = dailyHelper.getWritableDatabase();
-        dailyDB.close();
+
+        final Calendar c = Calendar.getInstance();
+        userYear    = c.get(Calendar.YEAR);
+        userMonth   = c.get(Calendar.MONTH) + 1;
+        userDay     = c.get(Calendar.DAY_OF_MONTH);
+        userSleepHour = c.get(Calendar.HOUR_OF_DAY);
+        userSleepMinute = c.get(Calendar.MINUTE);
+        userWakeHour = c.get(Calendar.HOUR_OF_DAY);
+        userWakeMinute = c.get(Calendar.MINUTE);
 
         dailyDate = (EditText) findViewById(R.id.dailyDate);
         dailyDate.setInputType(0);
         dailyDate.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                final Calendar c = Calendar.getInstance();
-                int mYear = c.get(Calendar.YEAR);
-                int mMonth = c.get(Calendar.MONTH);
-                int mDay = c.get(Calendar.DAY_OF_MONTH);
 
                 DatePickerDialog datePickerDialog = new DatePickerDialog(MainActivity.this,
                         new DatePickerDialog.OnDateSetListener() {
@@ -70,12 +77,13 @@ public class MainActivity extends AppCompatActivity {
                                 userYear = year;
                                 userMonth = month+1;
                                 userDay = dayOfMonth;
-                                todayDate = Integer.toString(userYear) + Integer.toString(userMonth) + Integer.toString(userDay);
+                                todayDate = String.format("%4d%02d%02d", userYear, userMonth, userDay);
                                 dailyDate.setText(year + "년 " + (month+1) + "월 " + dayOfMonth + "일");
+                                isSelectedDate = true;
 
                                 initializationDailyFromDB();
                             }
-                        }, mYear, mMonth, mDay);
+                        }, userYear, userMonth-1, userDay);
                 datePickerDialog.show();
             }
         });
@@ -84,10 +92,6 @@ public class MainActivity extends AppCompatActivity {
         sleepTimeButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                final Calendar c = Calendar.getInstance();
-                int mHour = c.get(Calendar.HOUR_OF_DAY);
-                int mMinute = c.get(Calendar.MINUTE);
-
                 TimePickerDialog timePickerDialog = new TimePickerDialog(MainActivity.this,
                         android.R.style.Theme_Holo_Light_Dialog_NoActionBar, new TimePickerDialog.OnTimeSetListener() {
                     @Override
@@ -100,9 +104,12 @@ public class MainActivity extends AppCompatActivity {
                         String Minute   = String.format("%02d", userSleepMinute);
                         sleepTimeButton.setText(Hour + ":" + Minute);
 
-                        writeData();
+                        if (isSelectedDate)
+                            writeData();
+                        else
+                            Toast.makeText(getApplicationContext(), "기록할 날짜를 선택하지 않았습니다", Toast.LENGTH_SHORT).show();
                     }
-                }, mHour, mMinute, true);
+                }, userSleepHour, userSleepMinute, true);
                 timePickerDialog.show();
             }
         });
@@ -111,10 +118,6 @@ public class MainActivity extends AppCompatActivity {
         wakeTimeButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                final Calendar c = Calendar.getInstance();
-                int mHour = c.get(Calendar.HOUR_OF_DAY);
-                int mMinute = c.get(Calendar.MINUTE);
-
                 TimePickerDialog timePickerDialog = new TimePickerDialog(MainActivity.this,
                         android.R.style.Theme_Holo_Light_Dialog_NoActionBar, new TimePickerDialog.OnTimeSetListener() {
                     @Override
@@ -127,9 +130,12 @@ public class MainActivity extends AppCompatActivity {
                         String Minute   = String.format("%02d", userWakeMinute);
                         wakeTimeButton.setText(Hour + ":" + Minute);
 
-                        writeData();
+                        if (isSelectedDate)
+                            writeData();
+                        else
+                            Toast.makeText(getApplicationContext(), "기록할 날짜를 선택하지 않았습니다", Toast.LENGTH_SHORT).show();
                     }
-                }, mHour, mMinute, true);
+                }, userWakeHour, userWakeMinute, true);
                 timePickerDialog.show();
             }
         });
@@ -140,7 +146,12 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
                 userMood = seekBar.getProgress();
-                writeData();
+
+                if (isSelectedDate)
+                    writeData();
+                else
+                    Toast.makeText(getApplicationContext(), "기록할 날짜를 선택하지 않았습니다", Toast.LENGTH_SHORT).show();
+
                 switch (userMood) {
                     case 0:
                         moodFaceEmoji.setImageResource(R.drawable.loudly_crying_face_emoji);
@@ -158,7 +169,6 @@ public class MainActivity extends AppCompatActivity {
                         moodFaceEmoji.setImageResource(R.drawable.smiling_emoji_with_smiling_eyes);
                         break;
                 }
-                Toast.makeText(getApplicationContext(), Integer.toString(userMood), Toast.LENGTH_SHORT).show();
             }
             @Override
             public void onStartTrackingTouch(SeekBar seekBar) { }
@@ -207,14 +217,9 @@ public class MainActivity extends AppCompatActivity {
         userSleepingTime = 0;
 
         if (userSleepHour > userWakeHour)
-            userSleepingTime += ((23 - userSleepHour) + userWakeHour) * 60;
+            userSleepingTime += ((24 - userSleepHour) + userWakeHour) * 60 + (userWakeMinute - userSleepMinute);
         else
-            userSleepingTime += (userWakeHour - userSleepHour) * 60;
-
-        if (userSleepMinute > userWakeMinute)
-            userSleepingTime += (60 - userSleepMinute) + userWakeMinute;
-        else
-            userSleepingTime += 60 + (userWakeMinute - userSleepMinute);
+            userSleepingTime += (userWakeHour - userSleepHour) * 60 + (userWakeMinute - userSleepMinute);
     }
 
     public void writeData() {
@@ -223,20 +228,15 @@ public class MainActivity extends AppCompatActivity {
         if (isAlreadyMade) {
             // data update
             ContentValues values = new ContentValues();
-            values.put("sleepHour", userSleepHour);
-            values.put("sleepMinute", userSleepMinute);
-            values.put("wakeHour", userWakeHour);
-            values.put("wakeMinute", userWakeMinute);
-            values.put("sleepingTime", userSleepingTime);
-            values.put("mood", userMood);
+            values.put("SLEEPhour", userSleepHour);
+            values.put("SLEEPminute", userSleepMinute);
+            values.put("WAKEhour", userWakeHour);
+            values.put("WAKEminute", userWakeMinute);
+            values.put("SLEEPINGtime", userSleepingTime);
+            values.put("MOOD", userMood);
 
             String[] whereArgs = new String[] {todayDate};
-            dailyDB.update("daily", values, "date = ?", whereArgs);
-                            /*
-                            dailyDB.execSQL("UPDATE daily SET sleepHour = userSleepHour," +
-                                    "sleepMinute = userSleepMinute, wakeHour = userWakeHour," +
-                                    "wakeMinute = userWakeMinute, sleepingTime = userSleepingTime WHERE date='"+ todayDate +"';");
-                                    */
+            dailyDB.update("daily", values, "DATE = ?", whereArgs);
         }
         else {
             // data insert(new)
@@ -254,16 +254,16 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void run() {
                 dailyDB = dailyHelper.getReadableDatabase();
-                Cursor cursor = dailyDB.rawQuery("SELECT * FROM daily WHERE date='" + todayDate + "';", null);
+                Cursor cursor = dailyDB.rawQuery("SELECT * FROM daily WHERE DATE='" + todayDate + "';", null);
 
                 if ((cursor != null) && (cursor.getCount() > 0)) {
                     cursor.moveToFirst();
-                    userSleepHour   = cursor.getInt(cursor.getColumnIndex("sleepHour"));
-                    userSleepMinute = cursor.getInt(cursor.getColumnIndex("sleepMinute"));
-                    userWakeHour    = cursor.getInt(cursor.getColumnIndex("wakeHour"));
-                    userWakeMinute  = cursor.getInt(cursor.getColumnIndex("wakeMinute"));
-                    userSleepingTime = cursor.getInt(cursor.getColumnIndex("sleepingTime"));
-                    userMood = cursor.getInt(cursor.getColumnIndex("mood"));
+                    userSleepHour       = cursor.getInt(cursor.getColumnIndex("SLEEPhour"));
+                    userSleepMinute     = cursor.getInt(cursor.getColumnIndex("SLEEPminute"));
+                    userWakeHour        = cursor.getInt(cursor.getColumnIndex("WAKEhour"));
+                    userWakeMinute      = cursor.getInt(cursor.getColumnIndex("WAKEminute"));
+                    userSleepingTime    = cursor.getInt(cursor.getColumnIndex("SLEEPINGtime"));
+                    userMood             = cursor.getInt(cursor.getColumnIndex("MOOD"));
 
                     sleepTimeButton.post(new Runnable() {
                         @Override
