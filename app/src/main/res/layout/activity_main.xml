@@ -19,9 +19,13 @@
             android:id="@+id/dailyDate"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:colorControlActivated="#ea777a"
             android:ems="10"
             android:hint="어느 날을 기록할까요?"
-            android:inputType="date" />
+            android:inputType="date"
+            android:textColor="#ea777a"
+            android:textColorHighlight="#e0ede3"
+            android:textStyle="bold" />
 
         <LinearLayout
             android:id="@+id/toDoList"
@@ -43,19 +47,23 @@
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
                     android:text="TO-DO LIST"
+                    android:textColor="#1c6888"
                     android:textSize="18sp"
                     android:textStyle="bold" />
 
                 <Button
-                    android:id="@+id/addTask"
+                    android:id="@+id/btn_add_Task"
+                    style="@style/Widget.AppCompat.Button.Borderless.Colored"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_weight="0"
-                    android:text="ADD" />
+                    android:text="ADD"
+                    android:textColor="#ea777a" />
             </LinearLayout>
 
-            <ListView
+            <android.support.v7.widget.RecyclerView
                 android:id="@+id/list_task"
+                class="android.support.v7.widget.RecyclerView"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent" />
 
@@ -68,16 +76,18 @@
         android:layout_marginTop="20dp"
         android:orientation="vertical">
 
-        <TextView
-            android:id="@+id/textView2"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="HABIT TRACKER"
-            android:textSize="18sp"
-            android:textStyle="bold" />
+            <TextView
+                android:id="@+id/textView2"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="HABIT TRACKER"
+                android:textColor="#1c6888"
+                android:textSize="18sp"
+                android:textStyle="bold" />
 
-        <ListView
+        <android.support.v7.widget.RecyclerView
             android:id="@+id/list_habit_tracker"
+            class="android.support.v7.widget.RecyclerView"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content" />
 
@@ -95,6 +105,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="SLEEP TRACKER"
+                android:textColor="#1c6888"
                 android:textSize="18sp"
                 android:textStyle="bold" />
 
@@ -113,6 +124,7 @@
                     android:layout_weight="1"
                     android:text="취침 시간"
                     android:textAlignment="center"
+                    android:textColor="#202020"
                     android:textStyle="bold" />
 
                 <Button
@@ -122,7 +134,8 @@
                     android:layout_height="wrap_content"
                     android:layout_marginRight="16dp"
                     android:layout_weight="1"
-                    android:text="Button" />
+                    android:text="ENTER"
+                    android:textColor="#ea777a" />
 
                 <TextView
                     android:id="@+id/wakeTime"
@@ -131,6 +144,7 @@
                     android:layout_weight="1"
                     android:text="기상 시간"
                     android:textAlignment="textEnd"
+                    android:textColor="#202020"
                     android:textStyle="bold" />
 
                 <Button
@@ -139,7 +153,8 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
-                    android:text="Button" />
+                    android:text="ENTER"
+                    android:textColor="#ea777a" />
 
             </LinearLayout>
 
@@ -157,6 +172,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="MOOD TRACKER"
+                android:textColor="#1c6888"
                 android:textSize="18sp"
                 android:textStyle="bold" />
 
@@ -191,6 +207,7 @@
                         android:layout_weight="1"
                         android:text="매우 슬픔"
                         android:textAlignment="center"
+                        android:textColor="#202020"
                         android:textSize="12sp" />
 
                     <TextView
@@ -198,8 +215,9 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
-                        android:text="조금 슬픔"
+                        android:text="슬픔"
                         android:textAlignment="center"
+                        android:textColor="#202020"
                         android:textSize="12sp" />
 
                     <TextView
@@ -209,6 +227,7 @@
                         android:layout_weight="1"
                         android:text="보통"
                         android:textAlignment="center"
+                        android:textColor="#202020"
                         android:textSize="12sp" />
 
                     <TextView
@@ -218,6 +237,7 @@
                         android:layout_weight="1"
                         android:text="조금 행복"
                         android:textAlignment="center"
+                        android:textColor="#202020"
                         android:textSize="12sp" />
 
                     <TextView
@@ -227,6 +247,7 @@
                         android:layout_weight="1"
                         android:text="매우 행복"
                         android:textAlignment="center"
+                        android:textColor="#202020"
                         android:textSize="12sp" />
                 </LinearLayout>
 
@@ -240,6 +261,8 @@
                     android:layout_marginBottom="8dp"
                     android:max="4"
                     android:progress="0"
+                    android:progressTint="#ea777a"
+                    android:thumbTint="#ea777a"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toEndOf="@+id/moodFaceEmoji" />
@@ -252,6 +275,7 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:layout_marginTop="24dp"
+            android:layout_marginBottom="48dp"
             android:orientation="vertical">
 
             <TextView
@@ -259,17 +283,25 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="DAILY NOTE"
+                android:textColor="#1c6888"
                 android:textSize="18sp"
                 android:textStyle="bold" />
 
             <EditText
-                android:id="@+id/editText2"
+                android:id="@+id/text_dailyJournal"
+                style="@android:style/Widget.DeviceDefault.Light.AutoCompleteTextView"
                 android:layout_width="match_parent"
-                android:layout_height="150dp"
+                android:layout_height="match_parent"
+                android:colorControlActivated="#ea777a"
                 android:ems="10"
+                android:gravity="top"
                 android:hint="오늘 어땠는지 기록하세요!"
-                android:inputType="textPersonName"
+                android:inputType="textMultiLine"
+                android:maxLines="8"
+                android:textColor="#202020"
+                android:textColorHighlight="#e0ede3"
                 android:textSize="14sp" />
+
         </LinearLayout>
 
     </LinearLayout>

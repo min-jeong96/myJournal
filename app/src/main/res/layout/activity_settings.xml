@@ -9,21 +9,189 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_marginTop="16dp"
+        android:layout_marginBottom="16dp"
         android:layout_marginLeft="16dp"
         android:layout_marginRight="16dp"
         android:orientation="vertical">
 
         <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="match_parent"
             android:layout_marginTop="16dp"
+            android:orientation="vertical" >
+
+            <TextView
+                android:id="@+id/key_index_title"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="TO-DO LIST KEY"
+                android:textColor="#1c6888"
+                android:textSize="18sp"
+                android:textStyle="bold" />
+
+            <android.support.constraint.ConstraintLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp">
+
+                <ImageView
+                    android:id="@+id/key1"
+                    android:layout_width="30dp"
+                    android:layout_height="30dp"
+                    android:layout_marginStart="80dp"
+                    android:layout_marginBottom="4dp"
+                    android:layout_weight="2"
+                    android:scaleType="centerInside"
+                    app:layout_constraintBottom_toTopOf="@+id/key2"
+                    app:layout_constraintEnd_toStartOf="@+id/desc1"
+                    app:layout_constraintHorizontal_bias="0.0"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintVertical_bias="0.0"
+                    app:srcCompat="@android:color/transparent" />
+
+                <TextView
+                    android:id="@+id/desc1"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:layout_marginStart="65dp"
+                    android:layout_weight="2"
+                    android:text="진행하지 않음"
+                    app:layout_constraintBottom_toBottomOf="@+id/key1"
+                    app:layout_constraintStart_toEndOf="@+id/key1"
+                    app:layout_constraintTop_toTopOf="@+id/key1" />
+
+                <ImageView
+                    android:id="@+id/key2"
+                    android:layout_width="30dp"
+                    android:layout_height="30dp"
+                    android:layout_marginStart="80dp"
+                    android:layout_marginBottom="4dp"
+                    android:layout_weight="1"
+                    android:scaleType="centerInside"
+                    app:layout_constraintBottom_toTopOf="@+id/key3"
+                    app:layout_constraintEnd_toStartOf="@+id/desc2"
+                    app:layout_constraintHorizontal_bias="0.0"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/key1"
+                    app:srcCompat="@drawable/task_continue_arrow" />
+
+                <TextView
+                    android:id="@+id/desc2"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:layout_marginStart="65dp"
+                    android:layout_weight="1"
+                    android:text="진행 중"
+                    app:layout_constraintBottom_toBottomOf="@+id/key2"
+                    app:layout_constraintStart_toEndOf="@+id/key2"
+                    app:layout_constraintTop_toTopOf="@+id/key2" />
+
+                <ImageView
+                    android:id="@+id/key3"
+                    android:layout_width="30dp"
+                    android:layout_height="30dp"
+                    android:layout_marginStart="80dp"
+                    android:layout_marginBottom="4dp"
+                    android:layout_weight="1"
+                    android:scaleType="centerInside"
+                    app:layout_constraintBottom_toTopOf="@+id/key4"
+                    app:layout_constraintEnd_toStartOf="@+id/desc3"
+                    app:layout_constraintHorizontal_bias="0.0"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/key2"
+                    app:srcCompat="@drawable/task_finished_check" />
+
+                <TextView
+                    android:id="@+id/desc3"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:layout_marginStart="65dp"
+                    android:layout_weight="1"
+                    android:text="완료"
+                    app:layout_constraintBottom_toBottomOf="@+id/key3"
+                    app:layout_constraintStart_toEndOf="@+id/key3"
+                    app:layout_constraintTop_toTopOf="@+id/key3" />
+
+                <ImageView
+                    android:id="@+id/key4"
+                    android:layout_width="30dp"
+                    android:layout_height="30dp"
+                    android:layout_marginStart="80dp"
+                    android:layout_marginBottom="4dp"
+                    android:layout_weight="1"
+                    android:scaleType="centerInside"
+                    app:layout_constraintBottom_toTopOf="@+id/key5"
+                    app:layout_constraintEnd_toStartOf="@+id/desc4"
+                    app:layout_constraintHorizontal_bias="0.0"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/key3"
+                    app:srcCompat="@drawable/task_delay_arrow" />
+
+                <TextView
+                    android:id="@+id/desc4"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:layout_marginStart="65dp"
+                    android:layout_weight="1"
+                    android:text="미루기"
+                    app:layout_constraintBottom_toBottomOf="@+id/key4"
+                    app:layout_constraintStart_toEndOf="@+id/key4"
+                    app:layout_constraintTop_toTopOf="@+id/key4" />
+
+                <ImageView
+                    android:id="@+id/key5"
+                    android:layout_width="30dp"
+                    android:layout_height="30dp"
+                    android:layout_marginStart="80dp"
+                    android:layout_marginBottom="4dp"
+                    android:layout_weight="1"
+                    android:scaleType="centerInside"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toStartOf="@+id/desc5"
+                    app:layout_constraintHorizontal_bias="0.0"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/key4"
+                    app:srcCompat="@drawable/task_cancle" />
+
+                <TextView
+                    android:id="@+id/desc5"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:layout_marginStart="65dp"
+                    android:layout_weight="1"
+                    android:text="취소"
+                    app:layout_constraintBottom_toBottomOf="@+id/key5"
+                    app:layout_constraintStart_toEndOf="@+id/key5"
+                    app:layout_constraintTop_toTopOf="@+id/key5" />
+            </android.support.constraint.ConstraintLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_marginTop="6dp"
+                android:orientation="horizontal">
+
+            </LinearLayout>
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="20dp"
             android:orientation="vertical">
 
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:text="목표 수면 시간 설정"
+                android:text="TIME SETTINGS"
+                android:textColor="#1c6888"
                 android:textSize="18sp"
                 android:textStyle="bold" />
 
@@ -31,7 +199,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginLeft="16dp"
-                android:layout_marginTop="16dp"
+                android:layout_marginTop="4dp"
                 android:layout_marginRight="16dp"
                 android:layout_weight="1"
                 android:orientation="horizontal">
@@ -43,6 +211,7 @@
                     android:layout_weight="1"
                     android:text="취침 시간"
                     android:textAlignment="center"
+                    android:textColor="#202020"
                     android:textStyle="bold" />
 
                 <Button
@@ -51,7 +220,8 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
-                    android:text="Button" />
+                    android:text="Button"
+                    android:textColor="#ea777a" />
 
             </LinearLayout>
 
@@ -70,6 +240,7 @@
                     android:layout_weight="1"
                     android:text="기상 시간"
                     android:textAlignment="center"
+                    android:textColor="#202020"
                     android:textStyle="bold" />
 
                 <Button
@@ -78,7 +249,8 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
-                    android:text="Button" />
+                    android:text="Button"
+                    android:textColor="#ea777a" />
 
             </LinearLayout>
 
@@ -99,6 +271,7 @@
                     android:layout_weight="1"
                     android:text="수면 시간"
                     android:textAlignment="center"
+                    android:textColor="#202020"
                     android:textSize="14sp"
                     android:textStyle="bold" />
 
@@ -110,7 +283,7 @@
                     android:text="TextView"
                     android:textAlignment="center"
                     android:textAppearance="@style/TextAppearance.AppCompat.Button"
-                    android:textColor="@color/colorAccent" />
+                    android:textColor="#ea777a" />
             </LinearLayout>
 
         </LinearLayout>
@@ -131,7 +304,8 @@
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
-                    android:text="습관 목록 설정"
+                    android:text="HABIT SETTINGS"
+                    android:textColor="#1c6888"
                     android:textSize="18sp"
                     android:textStyle="bold"
                     app:layout_constraintBottom_toBottomOf="parent"
@@ -145,31 +319,64 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="추가하기"
+                    android:textColor="#ea777a"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintLeft_toRightOf="@id/textView3"
                     app:layout_constraintRight_toRightOf="parent"
-                    app:layout_constraintTop_toTopOf="parent"/>
+                    app:layout_constraintTop_toTopOf="parent" />
             </android.support.constraint.ConstraintLayout>
 
             <android.support.v7.widget.RecyclerView
                 android:id="@+id/list_habit_tracker_settings"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:scrollbars="vertical" >
-            </android.support.v7.widget.RecyclerView>
+                android:scrollbars="vertical"></android.support.v7.widget.RecyclerView>
 
         </LinearLayout>
 
         <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="20dp"
+            android:layout_marginBottom="40dp"
             android:orientation="vertical">
 
-            <Button
-                android:id="@+id/button"
+            <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="Button" />
+                android:text="NOTIFICATION SETTINGS"
+                android:textColor="#1c6888"
+                android:textSize="18sp"
+                android:textStyle="bold" />
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="4dp"
+                android:layout_marginBottom="12dp"
+                android:layout_weight="1"
+                android:lineSpacingExtra="2sp"
+                android:text="목표로 설정한 취침 시간 30분 전, 기상 시간 30분 후 알림을 설정합니다.\n알림을 통해 기록 화면으로 바로 접근할 수 있습니다."
+                android:textSize="12sp" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="50dp"
+                android:layout_marginRight="50dp"
+                android:orientation="vertical">
+
+                <Switch
+                    android:id="@+id/switch_notification"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="어플 알림 설정"
+                    android:textColor="#202020"
+                    android:thumbTint="#ea777a"
+                    android:trackTint="#1c6888" />
+
+            </LinearLayout>
         </LinearLayout>
 
     </LinearLayout>

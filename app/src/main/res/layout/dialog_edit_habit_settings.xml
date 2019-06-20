@@ -1,53 +1,49 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:layout_marginLeft="12dp"
-    android:layout_marginTop="12dp"
-    android:layout_marginRight="12dp"
-    android:layout_marginBottom="12dp"
     android:orientation="vertical">
 
     <EditText
-        android:id="@+id/add_habit_title"
+        android:id="@+id/edit_habit_title"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:ems="10"
         android:hint="습관"
-        android:textColor="#1c6888"
-        android:textColorHighlight="#e0ede3"
-        android:colorControlActivated="#ea777a"
-        android:inputType="textPersonName" />
+        android:layout_marginStart="12dp"
+        android:layout_marginTop="12dp"
+        android:layout_marginEnd="12dp"
+        android:inputType="text" />
 
     <EditText
-        android:id="@+id/add_habit_description"
+        android:id="@+id/edit_habit_description"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:ems="10"
         android:hint="습관에 대한 설명"
-        android:textColorHighlight="#e0ede3"
-        android:colorControlActivated="#ea777a"
-        android:inputType="textPersonName" />
+        android:layout_marginStart="12dp"
+        android:layout_marginEnd="12dp"
+        android:inputType="text" />
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="horizontal"
+        android:layout_marginStart="12dp"
+        android:layout_marginTop="12dp"
+        android:layout_marginEnd="12dp"
         android:layout_marginBottom="12dp"
-        android:layout_marginTop="12dp">
+        android:orientation="horizontal">
 
         <Button
-            android:id="@+id/btn_confirm_add_habit"
+            android:id="@+id/btn_confirm_edit_habit"
             style="@android:style/Widget.Material.Button.Borderless.Colored"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:text="습관 등록"
-            android:textColor="#ea777a" />
+            android:text="수정" />
 
         <Button
-            android:id="@+id/btn_cancel_add_habit"
+            android:id="@+id/btn_cancel_edit_habit"
             style="@android:style/Widget.Material.Button.Borderless.Colored"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"

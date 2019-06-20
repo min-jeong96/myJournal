@@ -1,8 +1,12 @@
 package com.example.myjournal;
 
 import android.app.Dialog;
+import android.app.Notification;
+import android.app.NotificationManager;
+import android.app.PendingIntent;
 import android.app.TimePickerDialog;
 import android.content.ContentValues;
+import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.database.Cursor;
@@ -17,7 +21,10 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
+import android.widget.CompoundButton;
 import android.widget.EditText;
+import android.widget.ImageView;
+import android.widget.Switch;
 import android.widget.TextView;
 import android.widget.TimePicker;
 import android.widget.Toast;
@@ -34,17 +41,21 @@ public class SettingsActivity extends AppCompatActivity {
     SharedPreferences settings;
     SharedPreferences.Editor editor;
     public static final String PREFS_HABIT_SETTINGS = "MyHabitTracker";
+    public static final String PREFS_NOTIFICATION_SETTINGS = "MyJournalSettings";
 
     boolean isAlreadySet = false;
     int setSleepHour, setSleepMinute, setWakeHour, setWakeMinute, setSleepingTime;
 
     HabitSettingsAdapter habitSettingsAdapter;
-    ArrayList<String> titles, descriptions;
+    ArrayList<String> titles, descriptions, preferencesNum;
     int habitNum = 0;
 
     RecyclerView recyclerView;
     Button setSleepTimeButton, setWakeTimeButton, addHabitButton;
     TextView setSleepingTimeText;
+
+    Switch switchNotification;
+    boolean userChangedNotiSwitch = false;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -118,27 +129,80 @@ public class SettingsActivity extends AppCompatActivity {
             }
         });
 
+        switchNotification = (Switch) findViewById(R.id.switch_notification);
+        switchNotification.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                if (isChecked) {
+                    settings = getSharedPreferences(PREFS_NOTIFICATION_SETTINGS, 0);
+                    editor = settings.edit();
+                    editor.putBoolean("NOTIFICATION", true);
+                    editor.commit();
+
+                    Intent intent = new Intent(SettingsActivity.this, NotificationService.class);
+                    intent.putExtra("SLEEP HOUR", setSleepHour);
+                    intent.putExtra("SLEEP MINUTE", setSleepMinute);
+                    intent.putExtra("WAKE HOUR", setWakeHour);
+                    intent.putExtra("WAKE MINUTE", setWakeMinute);
+                    startService(intent);
+
+                    if(userChangedNotiSwitch) {
+                        Toast.makeText(getApplicationContext(), "알람이 설정되었습니다",
+                                Toast.LENGTH_SHORT).show();
+                    }
+                }
+                else {
+                    if(userChangedNotiSwitch) {
+                        settings = getSharedPreferences(PREFS_NOTIFICATION_SETTINGS, 0);
+                        editor = settings.edit();
+                        editor.putBoolean("NOTIFICATION", false);
+                        editor.commit();
+
+                        Intent intent = new Intent(SettingsActivity.this, NotificationService.class);
+                        stopService(intent);
+
+                        Toast.makeText(getApplicationContext(), "알람이 취소되었습니다",
+                                Toast.LENGTH_SHORT).show();
+                    }
+                }
+
+                userChangedNotiSwitch = true;
+            }
+        });
+
         dailyHelper = new dailyDBHelper(this);
         initializationSettingsFromDB();
 
         titles          = new ArrayList<String>();
         descriptions    = new ArrayList<String>();
+        preferencesNum  = new ArrayList<String>();
+
+        dailyDB = dailyHelper.getWritableDatabase();
+        Cursor cursor = dailyDB.rawQuery("SELECT * FROM habit WHERE DATE = 'SETTINGS';",null);
+        if ((cursor != null) && (cursor.getCount() > 0))
+            cursor.moveToFirst();
 
         settings = getSharedPreferences(PREFS_HABIT_SETTINGS, 0);
         habitNum = settings.getInt("USED MAX HABIT NUMBER", 0);
 
         for (int i = 0; i < habitNum; i++) {
-            String habitTitleReference  = "TITLE" + Integer.toString(i);
-            String habitDescReference   = "DESC" + Integer.toString(i);
+            String habitTitleReference = "TITLE" + Integer.toString(i);
+            String habitDescReference = "DESC" + Integer.toString(i);
+            String habitPreferenceNum = Integer.toString(i);
             String tmp_title = settings.getString(habitTitleReference, " ");
 
-            if (!(tmp_title.equals(" "))) {
-                titles.add(settings.getString(habitTitleReference, " "));
-                descriptions.add(settings.getString(habitDescReference, " "));
+            String getDBColumn = cursor.getString(cursor.getColumnIndex(habitTitleReference));
+
+            if (!(getDBColumn.equals("DELETED"))) {
+                if (!(tmp_title.equals(" "))) {
+                    titles.add(settings.getString(habitTitleReference, " "));
+                    descriptions.add(settings.getString(habitDescReference, " "));
+                    preferencesNum.add(habitPreferenceNum);
+                }
             }
         }
 
-        habitSettingsAdapter = new HabitSettingsAdapter(titles, descriptions);
+        habitSettingsAdapter = new HabitSettingsAdapter(this, titles, descriptions, preferencesNum);
         recyclerView.setAdapter(habitSettingsAdapter);
 
         addHabitButton = findViewById(R.id.btn_add_habit);
@@ -149,7 +213,7 @@ public class SettingsActivity extends AppCompatActivity {
                 addHabitDialog.setContentView(R.layout.dialog_add_habit_settings);
 
                 Button confirm_add_habit    = (Button) addHabitDialog.findViewById(R.id.btn_confirm_add_habit);
-                Button cancle_add_habit     = (Button) addHabitDialog.findViewById(R.id.btn_cancle_add_habit);
+                Button cancel_add_habit     = (Button) addHabitDialog.findViewById(R.id.btn_cancel_add_habit);
 
                 final EditText add_habit_title          = (EditText) addHabitDialog.findViewById(R.id.add_habit_title);
                 final EditText add_habit_description    = (EditText) addHabitDialog.findViewById(R.id.add_habit_description);
@@ -166,11 +230,32 @@ public class SettingsActivity extends AppCompatActivity {
                                 descriptions.add(" ");
                             }
 
+                            String newPreferencesNum= Integer.toString(habitNum);
+                            preferencesNum.add(newPreferencesNum);
+
+                            dailyDB = dailyHelper.getWritableDatabase();
+
                             String columnTitle = "TITLE" + Integer.toString(habitNum);
                             String columnValue = "VALUE" + Integer.toString(habitNum);
 
+                            if(dailyHelper.addColumn(dailyDB, columnTitle, columnValue))
+                                Log.d("TAG", "ADD COLUMN: " + columnTitle);
+                            dailyDB.close();
+
                             dailyDB = dailyHelper.getWritableDatabase();
-                            dailyHelper.onUpgrade(dailyDB, columnTitle, columnValue);
+                            Cursor cursor = dailyDB.rawQuery("SELECT * FROM habit WHERE DATE = 'SETTINGS';",null);
+                            if ((cursor != null) && (cursor.getCount() > 0)) {
+                                // data update
+                                ContentValues values = new ContentValues();
+                                values.put(columnTitle, columnTitle);
+                                values.put(columnValue, 0);
+
+                                String[] whereArgs = {"SETTINGS"};
+                                dailyDB.update("habit", values, "DATE = ?", whereArgs);
+                            }
+                            else
+                                dailyDB.execSQL("INSERT INTO habit VALUES('SETTINGS', '"+columnTitle+"', 0);");
+
                             dailyDB.close();
 
                             settings = getSharedPreferences(PREFS_HABIT_SETTINGS, 0);
@@ -193,7 +278,7 @@ public class SettingsActivity extends AppCompatActivity {
                             runOnUiThread(new Runnable() {
                                 @Override
                                 public void run() {
-                                    habitSettingsAdapter = new HabitSettingsAdapter(titles, descriptions);
+                                    habitSettingsAdapter = new HabitSettingsAdapter(SettingsActivity.this, titles, descriptions, preferencesNum);
                                     recyclerView.setAdapter(habitSettingsAdapter);
                                 }
                             });
@@ -209,7 +294,7 @@ public class SettingsActivity extends AppCompatActivity {
                     }
                 });
 
-                cancle_add_habit.setOnClickListener(new View.OnClickListener() {
+                cancel_add_habit.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
                         addHabitDialog.dismiss();
@@ -237,19 +322,19 @@ public class SettingsActivity extends AppCompatActivity {
         switch (item.getItemId()) {
             case R.id.daily_journal:
                 intent = new Intent(getApplicationContext(), MainActivity.class);
-                intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP|Intent.FLAG_ACTIVITY_SINGLE_TOP);
+                intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK|Intent.FLAG_ACTIVITY_NEW_TASK);
                 startActivity(intent);
                 overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out);
                 return true;
             case R.id.statistics:
                 intent = new Intent(getApplicationContext(), StatisticsActivity.class);
-                intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP|Intent.FLAG_ACTIVITY_SINGLE_TOP);
+                intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK|Intent.FLAG_ACTIVITY_NEW_TASK);
                 startActivity(intent);
                 overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out);
                 return true;
             case R.id.setting:
                 intent = new Intent(getApplicationContext(), SettingsActivity.class);
-                intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP|Intent.FLAG_ACTIVITY_SINGLE_TOP);
+                intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK|Intent.FLAG_ACTIVITY_NEW_TASK);
                 startActivity(intent);
                 overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out);
                 return true;
@@ -276,6 +361,25 @@ public class SettingsActivity extends AppCompatActivity {
         new Thread(new Runnable() {
             @Override
             public void run() {
+                settings = getSharedPreferences(PREFS_NOTIFICATION_SETTINGS, 0);
+                if(settings.getBoolean("NOTIFICATION", false)) {
+                    switchNotification.post(new Runnable() {
+                        @Override
+                        public void run() {
+                            switchNotification.setChecked(true);
+                        }
+                    });
+                }
+                else {
+                    switchNotification.post(new Runnable() {
+                        @Override
+                        public void run() {
+                            switchNotification.setChecked(false);
+                            userChangedNotiSwitch = false;
+                        }
+                    });
+                }
+
                 dailyDB = dailyHelper.getReadableDatabase();
                 Cursor cursor = dailyDB.rawQuery("SELECT * FROM daily WHERE DATE = 'SETTINGS';",null);
 
@@ -365,7 +469,7 @@ public class SettingsActivity extends AppCompatActivity {
             int setMood = 2;
             dailyDB.execSQL("INSERT INTO daily VALUES(null, 'SETTINGS'," +
                     "'"+ setSleepHour +"', '"+ setSleepMinute +"', '"+ setWakeHour +"'," +
-                    "'"+ setWakeMinute +"', '"+ setSleepingTime +"', '"+ setMood +"');");
+                    "'"+ setWakeMinute +"', '"+ setSleepingTime +"', '"+ setMood +"', null);");
             isAlreadySet = true;
         }
 

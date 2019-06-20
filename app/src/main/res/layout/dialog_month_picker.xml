@@ -27,6 +27,7 @@
             android:layout_marginRight="16dp"
             android:layout_weight="0"
             android:text="년"
+            android:textColor="#202020"
             android:textSize="14sp"
             android:textStyle="bold" />
 
@@ -44,6 +45,7 @@
             android:layout_marginLeft="4dp"
             android:layout_weight="0"
             android:text="월"
+            android:textColor="#202020"
             android:textSize="14sp"
             android:textStyle="bold" />
 
@@ -61,7 +63,8 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:text="설정" />
+            android:text="설정"
+            android:textColor="#ea777a" />
 
         <Button
             android:id="@+id/btn_cancel"
@@ -69,7 +72,8 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:text="취소" />
+            android:text="취소"
+            android:textColor="#1c6888" />
     </LinearLayout>
 
 </LinearLayout>

@@ -1,5 +1,9 @@
 apply plugin: 'com.android.application'
 
+dependencies {
+    compile 'com.github.PhilJay:MPAndroidChart:v3.0.2'
+}
+
 android {
     compileSdkVersion 28
     defaultConfig {
